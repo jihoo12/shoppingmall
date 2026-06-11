@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}주문 상세{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:700px">
+  <h2 class="fw-bold mb-1">주문 상세</h2>
+  <p class="text-muted mb-4">주문번호: #{{ order.id }}</p>
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-6"><span class="text-muted">주문 상태</span></div>
+        <div class="col-6 text-end"><span class="badge bg-primary fs-6">{{ order.status }}</span></div>
+      </div>
+      <div class="row mb-3">
+        <div class="col-6"><span class="text-muted">주문일</span></div>
+        <div class="col-6 text-end">{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+      </div>
+      <div class="row">
+        <div class="col-6"><span class="text-muted">배송주소</span></div>
+        <div class="col-6 text-end">{{ order.address }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body">
+      <h6 class="fw-bold mb-3">주문 상품</h6>
+      {% for item in order.items %}
+      <div class="d-flex justify-content-between mb-2">
+        <span>{{ item.product.name }} <span class="text-muted">x{{ item.quantity }}</span></span>
+        <span class="fw-semibold">{{ "{:,}".format(item.price * item.quantity) }}원</span>
+      </div>
+      {% endfor %}
+      <hr>
+      <div class="d-flex justify-content-between fw-bold fs-5">
+        <span>총 결제금액</span>
+        <span class="text-primary">{{ "{:,}".format(order.total_price) }}원</span>
+      </div>
+    </div>
+  </div>
+  <a href="{{ url_for('user.orders') }}" class="btn btn-outline-secondary">← 목록으로</a>
+</div>
+{% endblock %}

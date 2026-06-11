@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}관리자{% endblock %} - ShopFlask Admin</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root { --primary: #6c63ff; --dark: #1a1a2e; --sidebar-w: 240px; }
+    body { background: #f0f2f5; font-family: 'Segoe UI', sans-serif; }
+    .sidebar { width: var(--sidebar-w); background: var(--dark); min-height: 100vh; position: fixed; top: 0; left: 0; z-index: 100; padding-top: 1rem; }
+    .sidebar .brand { color: #fff; font-weight: 800; font-size: 1.3rem; padding: 1rem 1.5rem 2rem; }
+    .sidebar .brand span { color: var(--primary); }
+    .sidebar .nav-link { color: rgba(255,255,255,.7); padding: .6rem 1.5rem; border-radius: 8px; margin: 2px 8px; }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active { background: rgba(108,99,255,.3); color: #fff; }
+    .sidebar .nav-link i { width: 20px; }
+    .main-content { margin-left: var(--sidebar-w); padding: 2rem; }
+    .topbar { background: #fff; border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+    .card { border: none; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,.07); }
+    .stat-card { background: linear-gradient(135deg, var(--primary), #a29bfe); color: white; }
+    .stat-card.green { background: linear-gradient(135deg, #00b894, #55efc4); }
+    .stat-card.orange { background: linear-gradient(135deg, #fd79a8, #e84393); }
+    .stat-card.blue { background: linear-gradient(135deg, #0984e3, #74b9ff); }
+    .btn-primary { background: var(--primary); border-color: var(--primary); }
+    .flash-container { position: fixed; top: 20px; right: 20px; z-index: 9999; width: 320px; }
+    .badge-status-주문완료 { background: #6c63ff; }
+    .badge-status-배송중 { background: #0984e3; }
+    .badge-status-배송완료 { background: #00b894; }
+    .badge-status-취소 { background: #d63031; }
+  </style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="brand">Shop<span>Flask</span> <small class="d-block text-muted fs-6 fw-normal">관리자</small></div>
+  <nav class="nav flex-column">
+    <a class="nav-link {% if request.endpoint == 'admin.dashboard' %}active{% endif %}" href="{{ url_for('admin.dashboard') }}"><i class="fas fa-tachometer-alt me-2"></i>대시보드</a>
+    <a class="nav-link {% if 'product' in request.endpoint %}active{% endif %}" href="{{ url_for('admin.products') }}"><i class="fas fa-box me-2"></i>상품 관리</a>
+    <a class="nav-link {% if request.endpoint == 'admin.orders' %}active{% endif %}" href="{{ url_for('admin.orders') }}"><i class="fas fa-shopping-bag me-2"></i>주문 관리</a>
+    <a class="nav-link {% if request.endpoint == 'admin.users' %}active{% endif %}" href="{{ url_for('admin.users') }}"><i class="fas fa-users me-2"></i>회원 관리</a>
+    <a class="nav-link {% if request.endpoint == 'admin.categories' %}active{% endif %}" href="{{ url_for('admin.categories') }}"><i class="fas fa-tags me-2"></i>카테고리</a>
+    <hr style="border-color: rgba(255,255,255,.2); margin: 1rem .5rem;">
+    <a class="nav-link" href="{{ url_for('user.index') }}"><i class="fas fa-store me-2"></i>쇼핑몰 보기</a>
+    <a class="nav-link text-danger" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt me-2"></i>로그아웃</a>
+  </nav>
+</div>
+
+<div class="main-content">
+  <div class="topbar">
+    <h5 class="mb-0 fw-bold">{% block page_title %}대시보드{% endblock %}</h5>
+    <span class="text-muted"><i class="fas fa-user-shield me-1"></i>{{ current_user.username }}</span>
+  </div>
+
+  <div class="flash-container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }} alert-dismissible fade show shadow" role="alert">
+          {{ msg }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+      {% endfor %}
+    {% endwith %}
+  </div>
+
+  {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,93 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}대시보드{% endblock %}
+{% block page_title %}대시보드{% endblock %}
+{% block content %}
+<div class="row g-4 mb-4">
+  <div class="col-md-3">
+    <div class="card stat-card p-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div><p class="mb-1 opacity-75">총 회원수</p><h3 class="fw-black mb-0">{{ total_users }}</h3></div>
+        <i class="fas fa-users fa-2x opacity-50"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card green p-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div><p class="mb-1 opacity-75">총 상품</p><h3 class="fw-black mb-0">{{ total_products }}</h3></div>
+        <i class="fas fa-box fa-2x opacity-50"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card orange p-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div><p class="mb-1 opacity-75">총 주문</p><h3 class="fw-black mb-0">{{ total_orders }}</h3></div>
+        <i class="fas fa-shopping-bag fa-2x opacity-50"></i>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card stat-card blue p-4">
+      <div class="d-flex justify-content-between align-items-center">
+        <div><p class="mb-1 opacity-75">총 매출</p><h3 class="fw-black mb-0">{{ "{:,}".format(revenue) }}원</h3></div>
+        <i class="fas fa-won-sign fa-2x opacity-50"></i>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-md-8">
+    <div class="card p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0">최근 주문</h6>
+        <a href="{{ url_for('admin.orders') }}" class="btn btn-sm btn-outline-primary">전체보기</a>
+      </div>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle">
+          <thead class="table-light"><tr><th>주문번호</th><th>회원</th><th>금액</th><th>상태</th><th>날짜</th></tr></thead>
+          <tbody>
+          {% for order in recent_orders %}
+          <tr>
+            <td><strong>#{{ order.id }}</strong></td>
+            <td>{{ order.customer.username }}</td>
+            <td class="text-primary fw-semibold">{{ "{:,}".format(order.total_price) }}원</td>
+            <td><span class="badge badge-status-{{ order.status }}">{{ order.status }}</span></td>
+            <td class="text-muted small">{{ order.created_at.strftime('%m/%d %H:%M') }}</td>
+          </tr>
+          {% else %}
+          <tr><td colspan="5" class="text-center text-muted py-4">주문이 없습니다</td></tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="card p-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0">⚠️ 재고 부족</h6>
+        <a href="{{ url_for('admin.products') }}" class="btn btn-sm btn-outline-warning">관리</a>
+      </div>
+      {% for p in low_stock %}
+      <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="small">{{ p.name }}</span>
+        <span class="badge bg-warning text-dark">{{ p.stock }}개</span>
+      </div>
+      {% else %}
+      <p class="text-muted text-center small py-3">재고 부족 상품 없음</p>
+      {% endfor %}
+    </div>
+
+    <div class="card p-4 mt-4">
+      <h6 class="fw-bold mb-3">빠른 메뉴</h6>
+      <div class="d-grid gap-2">
+        <a href="{{ url_for('admin.new_product') }}" class="btn btn-primary btn-sm"><i class="fas fa-plus me-1"></i>새 상품 등록</a>
+        <a href="{{ url_for('admin.orders') }}" class="btn btn-outline-primary btn-sm"><i class="fas fa-list me-1"></i>주문 관리</a>
+        <a href="{{ url_for('admin.categories') }}" class="btn btn-outline-secondary btn-sm"><i class="fas fa-tags me-1"></i>카테고리 관리</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

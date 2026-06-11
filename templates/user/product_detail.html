@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}{{ product.name }}{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="{{ url_for('user.index') }}">홈</a></li>
+      <li class="breadcrumb-item"><a href="{{ url_for('user.shop') }}">전체 상품</a></li>
+      <li class="breadcrumb-item active">{{ product.name }}</li>
+    </ol>
+  </nav>
+
+  <div class="row g-5">
+    <div class="col-md-5">
+      <div class="rounded-4 overflow-hidden" style="height:360px; background:linear-gradient(135deg,#f0f0ff,#e0e0ff); display:flex; align-items:center; justify-content:center; font-size:8rem;">
+        🛒
+      </div>
+    </div>
+    <div class="col-md-7">
+      <p class="text-muted mb-1">{{ product.category.name if product.category else '기타' }}</p>
+      <h2 class="fw-black mb-2">{{ product.name }}</h2>
+      <h3 class="text-primary fw-bold mb-3">{{ "{:,}".format(product.price) }}원</h3>
+      <p class="text-muted mb-4">{{ product.description or '상품 설명이 없습니다.' }}</p>
+
+      {% if product.stock > 0 %}
+        <p class="text-success mb-3"><i class="fas fa-check-circle me-1"></i>재고 {{ product.stock }}개</p>
+        {% if current_user.is_authenticated %}
+        <form action="{{ url_for('user.add_to_cart', product_id=product.id) }}" method="POST" class="d-flex gap-2 align-items-center">
+          <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" class="form-control" style="width:80px">
+          <button type="submit" class="btn btn-primary btn-lg px-4"><i class="fas fa-cart-plus me-2"></i>장바구니 담기</button>
+        </form>
+        {% else %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary btn-lg px-4"><i class="fas fa-sign-in-alt me-2"></i>로그인 후 구매</a>
+        {% endif %}
+      {% else %}
+        <span class="badge bg-secondary fs-6 px-4 py-2">품절</span>
+      {% endif %}
+    </div>
+  </div>
+
+  {% if related %}
+  <div class="mt-5">
+    <h5 class="fw-bold mb-3">관련 상품</h5>
+    <div class="row g-3">
+      {% for p in related %}
+      <div class="col-6 col-md-3">
+        <a href="{{ url_for('user.product_detail', product_id=p.id) }}" class="text-decoration-none text-dark">
+          <div class="card border-0 shadow-sm" style="border-radius:10px; overflow:hidden">
+            <div style="height:120px; background:linear-gradient(135deg,#f8f9fa,#e9ecef); display:flex; align-items:center; justify-content:center; font-size:2.5rem;">🛒</div>
+            <div class="card-body p-2">
+              <p class="small fw-bold mb-0">{{ p.name }}</p>
+              <p class="text-primary small mb-0">{{ "{:,}".format(p.price) }}원</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

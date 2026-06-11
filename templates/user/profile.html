@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% block title %}내 프로필{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:600px">
+  <div class="card border-0 shadow-sm rounded-4 p-5 text-center">
+    <div style="width:80px; height:80px; background: linear-gradient(135deg,#6c63ff,#a29bfe); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 1rem; font-size:2rem; color:white;">
+      {{ current_user.username[0].upper() }}
+    </div>
+    <h3 class="fw-bold">{{ current_user.username }}</h3>
+    <p class="text-muted">{{ current_user.email }}</p>
+    {% if current_user.is_admin %}<span class="badge bg-primary mb-2">관리자</span>{% endif %}
+    <p class="text-muted small mb-4">가입일: {{ current_user.created_at.strftime('%Y년 %m월 %d일') }}</p>
+    <div class="row g-3 text-center mb-4">
+      <div class="col-4">
+        <div class="card border-0 bg-light rounded-3 p-3">
+          <h4 class="fw-black text-primary mb-0">{{ order_count }}</h4>
+          <small class="text-muted">총 주문</small>
+        </div>
+      </div>
+      <div class="col-4">
+        <div class="card border-0 bg-light rounded-3 p-3">
+          <h4 class="fw-black text-primary mb-0">{{ current_user.cart_items|length }}</h4>
+          <small class="text-muted">장바구니</small>
+        </div>
+      </div>
+    </div>
+    <div class="d-flex gap-2 justify-content-center">
+      <a href="{{ url_for('user.orders') }}" class="btn btn-primary px-4">주문 내역</a>
+      <a href="{{ url_for('user.cart') }}" class="btn btn-outline-primary px-4">장바구니</a>
+      {% if current_user.is_admin %}
+      <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-secondary px-4">관리자 패널</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends 'admin/base_admin.html' %}
+{% block title %}{% if product %}상품 수정{% else %}상품 등록{% endif %}{% endblock %}
+{% block page_title %}{% if product %}상품 수정{% else %}새 상품 등록{% endif %}{% endblock %}
+{% block content %}
+<div class="card" style="max-width:600px">
+  <div class="card-body p-4">
+    <form method="POST" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label class="form-label fw-semibold">상품명 <span class="text-danger">*</span></label>
+        <input type="text" name="name" class="form-control" value="{{ product.name if product else '' }}" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">카테고리</label>
+        <select name="category_id" class="form-select">
+          <option value="">카테고리 없음</option>
+          {% for cat in categories %}
+          <option value="{{ cat.id }}" {% if product and product.category_id == cat.id %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="row g-3 mb-3">
+        <div class="col-6">
+          <label class="form-label fw-semibold">가격 (원) <span class="text-danger">*</span></label>
+          <input type="number" name="price" class="form-control" value="{{ product.price if product else '' }}" min="0" required>
+        </div>
+        <div class="col-6">
+          <label class="form-label fw-semibold">재고 수량</label>
+          <input type="number" name="stock" class="form-control" value="{{ product.stock if product else 0 }}" min="0">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label fw-semibold">상품 설명</label>
+        <textarea name="description" class="form-control" rows="4" placeholder="상품 설명을 입력하세요">{{ product.description if product else '' }}</textarea>
+      </div>
+      <div class="mb-4">
+        <label class="form-label fw-semibold">상품 이미지</label>
+        <input type="file" name="image" class="form-control" accept="image/*">
+        {% if product and product.image != 'default.png' %}
+        <small class="text-muted">현재: {{ product.image }}</small>
+        {% endif %}
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-primary px-4">{% if product %}수정 완료{% else %}등록{% endif %}</button>
+        <a href="{{ url_for('admin.products') }}" class="btn btn-outline-secondary">취소</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

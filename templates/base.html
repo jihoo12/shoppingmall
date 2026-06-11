@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}ShopFlask{% endblock %}</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    :root { --primary: #6c63ff; --dark: #1a1a2e; }
+    body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; }
+    .navbar { background: var(--dark) !important; }
+    .navbar-brand { color: #fff !important; font-weight: 800; font-size: 1.4rem; }
+    .navbar-brand span { color: var(--primary); }
+    .nav-link { color: rgba(255,255,255,.8) !important; }
+    .nav-link:hover { color: #fff !important; }
+    .btn-primary { background: var(--primary); border-color: var(--primary); }
+    .btn-primary:hover { background: #574fd6; border-color: #574fd6; }
+    .badge-cart { background: var(--primary); }
+    footer { background: var(--dark); color: rgba(255,255,255,.6); padding: 2rem 0; margin-top: 4rem; }
+    .flash-container { position: fixed; top: 70px; right: 20px; z-index: 9999; width: 320px; }
+  </style>
+  {% block head %}{% endblock %}
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="{{ url_for('user.index') }}">Shop<span>Flask</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('user.shop') }}">전체상품</a></li>
+      </ul>
+      <form class="d-flex me-3" action="{{ url_for('user.shop') }}" method="get">
+        <input class="form-control form-control-sm me-2" name="q" placeholder="상품 검색..." style="width:200px">
+        <button class="btn btn-sm btn-outline-light" type="submit"><i class="fas fa-search"></i></button>
+      </form>
+      <ul class="navbar-nav">
+        {% if current_user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link" href="{{ url_for('user.cart') }}">
+              <i class="fas fa-shopping-cart"></i>
+              {% set cart_count = current_user.cart_items|length %}
+              {% if cart_count > 0 %}<span class="badge badge-cart">{{ cart_count }}</span>{% endif %}
+            </a>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+              <i class="fas fa-user-circle"></i> {{ current_user.username }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="{{ url_for('user.profile') }}">내 프로필</a></li>
+              <li><a class="dropdown-item" href="{{ url_for('user.orders') }}">주문 내역</a></li>
+              {% if current_user.is_admin %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-purple" href="{{ url_for('admin.dashboard') }}"><i class="fas fa-cog"></i> 관리자 페이지</a></li>
+              {% endif %}
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="{{ url_for('auth.logout') }}">로그아웃</a></li>
+            </ul>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">로그인</a></li>
+          <li class="nav-item"><a class="nav-link btn btn-primary btn-sm text-white ms-2 px-3" href="{{ url_for('auth.register') }}">회원가입</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="flash-container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="alert alert-{{ cat }} alert-dismissible fade show shadow-sm" role="alert">
+        {{ msg }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+    {% endfor %}
+  {% endwith %}
+</div>
+
+<main>{% block content %}{% endblock %}</main>
+
+<footer>
+  <div class="container text-center">
+    <p class="mb-0">© 2025 ShopFlask. All rights reserved.</p>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

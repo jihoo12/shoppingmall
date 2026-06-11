@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}주문 내역{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:800px">
+  <h2 class="fw-bold mb-4">주문 내역</h2>
+  {% if orders %}
+  <div class="card border-0 shadow-sm rounded-4">
+    {% for order in orders %}
+    <div class="p-4 {% if not loop.last %}border-bottom{% endif %}">
+      <div class="d-flex justify-content-between align-items-start">
+        <div>
+          <p class="text-muted small mb-1">{{ order.created_at.strftime('%Y년 %m월 %d일') }}</p>
+          <h6 class="fw-bold mb-1">주문 #{{ order.id }}</h6>
+          <p class="text-muted small mb-0">{{ order.items|length }}개 상품</p>
+        </div>
+        <div class="text-end">
+          <span class="badge bg-primary mb-1">{{ order.status }}</span><br>
+          <span class="fw-bold text-primary">{{ "{:,}".format(order.total_price) }}원</span><br>
+          <a href="{{ url_for('user.order_detail', order_id=order.id) }}" class="btn btn-sm btn-outline-primary mt-2">상세보기</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5 text-muted">
+    <i class="fas fa-clipboard-list fa-4x mb-3 opacity-25"></i>
+    <h5>주문 내역이 없습니다</h5>
+    <a href="{{ url_for('user.shop') }}" class="btn btn-primary mt-3">쇼핑하러 가기</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

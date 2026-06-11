@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}회원가입{% endblock %}
+{% block content %}
+<div class="container" style="max-width:480px; padding-top:60px; padding-bottom:80px">
+  <div class="card shadow-lg border-0 rounded-4">
+    <div class="card-body p-5">
+      <h2 class="fw-bold text-center mb-1">회원가입</h2>
+      <p class="text-center text-muted mb-4">새 계정을 만들어보세요</p>
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label fw-semibold">닉네임</label>
+          <input type="text" name="username" class="form-control form-control-lg" placeholder="닉네임 입력" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">이메일</label>
+          <input type="email" name="email" class="form-control form-control-lg" placeholder="example@email.com" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold">비밀번호</label>
+          <input type="password" name="password" class="form-control form-control-lg" placeholder="6자 이상" required>
+        </div>
+        <div class="mb-4">
+          <label class="form-label fw-semibold">비밀번호 확인</label>
+          <input type="password" name="confirm_password" class="form-control form-control-lg" placeholder="비밀번호 재입력" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100 btn-lg fw-bold">회원가입</button>
+      </form>
+      <hr class="my-4">
+      <p class="text-center mb-0 text-muted">이미 계정이 있으신가요?
+        <a href="{{ url_for('auth.login') }}" class="text-decoration-none fw-semibold" style="color:var(--primary)">로그인</a>
+      </p>
+    </div>
+  </div>
+</div>
+{% endblock %}

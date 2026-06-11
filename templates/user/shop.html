@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}전체 상품{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row">
+    <!-- Sidebar Filters -->
+    <div class="col-lg-3 mb-4">
+      <div class="card border-0 shadow-sm rounded-3 p-3">
+        <h6 class="fw-bold mb-3">카테고리</h6>
+        <a href="{{ url_for('user.shop', q=query_str, sort=sort) }}" class="d-block py-1 text-decoration-none {% if not current_cat %}fw-bold text-primary{% else %}text-muted{% endif %}">전체</a>
+        {% for cat in categories %}
+        <a href="{{ url_for('user.shop', category=cat.id, q=query_str, sort=sort) }}" class="d-block py-1 text-decoration-none {% if current_cat == cat.id %}fw-bold text-primary{% else %}text-muted{% endif %}">
+          {{ cat.name }} <small class="text-muted">({{ cat.products|length }})</small>
+        </a>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="col-lg-9">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          {% if query_str %}<span class="text-muted">"<strong>{{ query_str }}</strong>" 검색 결과 </span>{% endif %}
+          <span class="text-muted small">총 {{ products.total }}개 상품</span>
+        </div>
+        <form method="get" class="d-flex align-items-center gap-2">
+          {% if current_cat %}<input type="hidden" name="category" value="{{ current_cat }}">{% endif %}
+          {% if query_str %}<input type="hidden" name="q" value="{{ query_str }}">{% endif %}
+          <select name="sort" class="form-select form-select-sm" onchange="this.form.submit()" style="width:auto">
+            <option value="newest" {% if sort=='newest' %}selected{% endif %}>최신순</option>
+            <option value="price_asc" {% if sort=='price_asc' %}selected{% endif %}>낮은 가격순</option>
+            <option value="price_desc" {% if sort=='price_desc' %}selected{% endif %}>높은 가격순</option>
+          </select>
+        </form>
+      </div>
+
+      {% if products.items %}
+      <div class="row g-4">
+        {% for product in products.items %}
+        <div class="col-6 col-md-4">
+          <a href="{{ url_for('user.product_detail', product_id=product.id) }}" class="text-decoration-none text-dark">
+            <div class="card border-0 shadow-sm h-100" style="border-radius:12px; transition:.2s; overflow:hidden" onmouseover="this.style.transform='translateY(-4px)'" onmouseout="this.style.transform=''">
+              <div style="height:160px; background: linear-gradient(135deg,#f8f9fa,#e9ecef); display:flex; align-items:center; justify-content:center; font-size:3.5rem;">🛒</div>
+              <div class="card-body">
+                <p class="text-muted small mb-1">{{ product.category.name if product.category else '기타' }}</p>
+                <h6 class="fw-bold mb-1">{{ product.name }}</h6>
+                <p class="text-primary fw-bold mb-1">{{ "{:,}".format(product.price) }}원</p>
+                {% if product.stock == 0 %}
+                <span class="badge bg-secondary small">품절</span>
+                {% elif product.stock < 5 %}
+                <span class="badge bg-warning text-dark small">잔여 {{ product.stock }}개</span>
+                {% endif %}
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+      <!-- Pagination -->
+      {% if products.pages > 1 %}
+      <nav class="mt-5">
+        <ul class="pagination justify-content-center">
+          {% for page in products.iter_pages() %}
+            {% if page %}
+              <li class="page-item {% if page == products.page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('user.shop', page=page, category=current_cat, q=query_str, sort=sort) }}">{{ page }}</a>
+              </li>
+            {% else %}
+              <li class="page-item disabled"><span class="page-link">…</span></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </nav>
+      {% endif %}
+      {% else %}
+      <div class="text-center py-5 text-muted">
+        <i class="fas fa-search fa-3x mb-3 opacity-25"></i>
+        <p>검색 결과가 없습니다.</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
