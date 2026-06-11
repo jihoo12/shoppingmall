@@ -1,7 +1,6 @@
 from flask import Flask
 from extensions import db, login_manager, bcrypt
 import os
-
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
@@ -29,6 +28,7 @@ def create_app():
         db.create_all()
         from models.user import User
         from models.product import Product, Category
+        # 샘플 상품 추가 (최초 1회만)
         if not User.query.filter_by(email='admin@shop.com').first():
             admin = User(
                 username='admin',
@@ -40,6 +40,16 @@ def create_app():
             for c in ['전자제품', '의류', '식품', '도서', '스포츠']:
                 if not Category.query.filter_by(name=c).first():
                     db.session.add(Category(name=c))
+            db.session.commit()
+        if Product.query.count() == 0:
+            samples = [
+                Product(name='무선 이어폰', description='고음질 블루투스 이어폰', price=59000, stock=20, category_id=1),
+                Product(name='코튼 티셔츠', description='부드러운 순면 티셔츠', price=19000, stock=50, category_id=2),
+                Product(name='유기농 그래놀라', description='건강한 아침식사용 그래놀라', price=12000, stock=30, category_id=3),
+                Product(name='파이썬 입문서', description='초보자를 위한 파이썬 프로그래밍', price=28000, stock=15, category_id=4),
+                Product(name='요가 매트', description='미끄럼 방지 TPE 소재', price=35000, stock=25, category_id=5),
+            ]
+            db.session.add_all(samples)
             db.session.commit()
 
     return app
